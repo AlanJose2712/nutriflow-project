@@ -79,7 +79,7 @@ pipeline {
         stage('Security Scan: Dockerfiles') {
             steps {
                 sh '''
-                    trivy config $TRIVY_FLAGS --severity HIGH,CRITICAL --exit-code 0 backend frontend
+                    trivy config $TRIVY_FLAGS --severity HIGH,CRITICAL --exit-code 0 --skip-dirs node_modules,.git .
                 '''
             }
         }
