@@ -10,6 +10,8 @@ pipeline {
         // Placeholder: will be replaced with the real backend address once EKS exists
         VITE_API_URL = 'http://localhost:8000/nutriflow'
         TRIVY_FLAGS  = '--skip-version-check --quiet'
+        AWS_REGION   = 'ap-southeast-2'
+        ECR_REGISTRY = '667819982123.dkr.ecr.ap-southeast-2.amazonaws.com'
     }
 
     stages {
@@ -104,6 +106,26 @@ pipeline {
                         echo "=== $IMG:$IMAGE_TAG gate (CRITICAL with fix) ==="
                         trivy image $TRIVY_FLAGS --severity CRITICAL \
                             --ignore-unfixed --exit-code 1 $IMG:$IMAGE_TAG
+                    done
+                '''
+            }
+        }
+
+        stage('Login to ECR') {
+            steps {
+                sh '''
+                    aws ecr get-login-password --region $AWS_REGION | \
+                        docker login --username AWS --password-stdin $ECR_REGISTRY
+                '''
+            }
+        }
+
+        stage('Tag and Push to ECR') {
+            steps {
+                sh '''
+                    for IMG in nutriflow-backend nutriflow-frontend; do
+                        docker tag $IMG:$IMAGE_TAG $ECR_REGISTRY/$IMG:$IMAGE_TAG
+                        docker push $ECR_REGISTRY/$IMG:$IMAGE_TAG
                     done
                 '''
             }
