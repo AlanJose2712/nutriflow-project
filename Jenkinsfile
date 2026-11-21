@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         // Placeholder: will be replaced with the real backend address once EKS exists
-        VITE_API_URL = 'http://localhost:8000/nutriflow'
+        VITE_API_URL = 'http://a03f987f367b241088cd38558186c6c6-471459272.ap-southeast-2.elb.amazonaws.com/nutriflow'
         TRIVY_FLAGS  = '--skip-version-check --quiet'
         AWS_REGION   = 'ap-southeast-2'
         ECR_REGISTRY = '667819982123.dkr.ecr.ap-southeast-2.amazonaws.com'
